@@ -91,7 +91,26 @@ app.post('/uploadImg', upload.single('file'), (req, res)=>{
     })
     
 })
-
+app.post('/delete/:id/:pass/:email/:name', (req, res)=>{
+    const id = req.params.id;
+    const email = req.params.email;
+    const senha = req.params.pass;
+    const name = req.params.name;
+    user.findOne({where:{email:email,name:name}}).then(result =>{
+        if(result === null || result === undefined){
+            return res.redirect('http://localhost:3000/forum');
+        }else{
+        var verify = bcrypt.compareSync(senha,result.senha);
+        if(verify){
+            pb.destroy({where:{
+                 id:id}})
+                res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+                return res.redirect('http://localhost:3000/forum');
+        }
+    }   
+    })
+       
+})
 app.post('/updateInformation', (req, res)=>{
     const id = req.body.id;
     const email = req.body.email;
